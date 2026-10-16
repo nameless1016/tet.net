@@ -1,0 +1,52 @@
+<svg class="screen" viewBox="0 0 480 720" xmlns="http://www.w3.org/2000/svg">
+    <Frame />
+    @T("px", 240, 80, 20, "#0f380f", "HOW TO PLAY", "middle")
+
+    @for (int i = 0; i < Goal.Length; i++)
+    {
+        @T("px", 40, 130 + 24 * i, 8, "#0f380f", Goal[i])
+    }
+
+    <rect x="32" y="236" width="416" height="28" fill="#0f380f" />
+    @T("px", 240, 255, 8, "#9bbc0f", "SCORING (x LEVEL)", "middle")
+
+    @for (int i = 0; i < Table.Length; i++)
+    {
+        int y = 276 + 30 * i;
+        <rect x="32" y="@y" width="416" height="26" fill="@(i % 2 == 0 ? "#8bac0f" : "#9bbc0f")" stroke="#0f380f" stroke-width="2" />
+        @T("px", 48, y + 18, 8, "#0f380f", Table[i].Item1)
+        @T("px", 432, y + 18, 8, "#0f380f", Table[i].Item2, "end")
+    }
+
+    <g class="clk" @onclick="() => S.GoMenu()">
+        <rect x="140" y="622" width="200" height="52" fill="#0f380f" />
+        <rect x="144" y="626" width="192" height="44" fill="none" stroke="#9bbc0f" stroke-width="2" />
+        @T("px", 240, 655, 16, "#9bbc0f", "BACK", "middle")
+        @T("px", 158, 654, 12, "#9bbc0f", "&#9654;")
+    </g>
+</svg>
+
+@code {
+    [Parameter] public AppState S { get; set; } = null!;
+
+    static readonly string[] Goal =
+    {
+        "Stack falling pieces to fill rows.",
+        "Full rows clear. Clear more, level up.",
+        "Every 10 lines the drop speed rises.",
+        "Stack above the top = game over.",
+    };
+
+    static readonly (string, string)[] Table =
+    {
+        ("SINGLE", "100"), ("DOUBLE", "300"), ("TRIPLE", "500"), ("TETRIS", "800"),
+        ("T-SPIN 1", "800"), ("T-SPIN 2", "1200"), ("T-SPIN 3", "1600"),
+        ("SOFT DROP", "1/CELL"), ("HARD DROP", "2/CELL"), ("BACK-TO-BACK", "x1.5"), ("COMBO", "50 x N"),
+    };
+
+    static MarkupString T(string cls, int x, int y, int size, string fill, string text, string anchor = "")
+    {
+        string anc = string.IsNullOrEmpty(anchor) ? "" : $" text-anchor=\"{anchor}\"";
+        return new MarkupString($"<text class=\"{cls}\" x=\"{x}\" y=\"{y}\" font-size=\"{size}\" fill=\"{fill}\"{anc}>{text}</text>");
+    }
+}
