@@ -1,0 +1,72 @@
+<svg class="screen" viewBox="0 0 480 720" xmlns="http://www.w3.org/2000/svg">
+    <Frame />
+    @T("px", 240, 80, 20, "#0f380f", "CONTROLS", "middle")
+    @T("px", 240, 112, 8, "#306230", "SELECT ROW + ENTER TO REBIND", "middle")
+
+    @for (int i = 0; i < AppState.CtlRows.Length; i++)
+    {
+        int idx = i;
+        int y = 132 + 54 * i;
+        bool sel = S.CtlSel == i;
+        bool rb = S.Rebind == i;
+        var row = AppState.CtlRows[i];
+        <g class="clk" @onclick="() => S.BeginRebind(idx)">
+            @if (sel)
+            {
+                <rect x="32" y="@y" width="416" height="44" fill="#0f380f" stroke="#0f380f" stroke-width="3" />
+                @T("px", 48, y + 28, 8, "#9bbc0f", row.Label)
+                <rect x="236" y="@(y + 6)" width="124" height="32" fill="@(rb ? "#8bac0f" : "#9bbc0f")" stroke="@(rb ? "#9bbc0f" : "#0f380f")" stroke-width="2" />
+                @T("px", 298, y + 27, 8, "#0f380f", rb ? "PRESS KEY.." : S.Keys.Short(row.A), "middle")
+                <rect x="372" y="@(y + 6)" width="64" height="32" fill="#9bbc0f" />
+                @T("px", 404, y + 27, 8, "#0f380f", "SET", "middle")
+            }
+            else
+            {
+                <rect x="32" y="@y" width="416" height="44" fill="#8bac0f" stroke="#0f380f" stroke-width="3" />
+                @T("px", 48, y + 28, 8, "#0f380f", row.Label)
+                <rect x="236" y="@(y + 6)" width="124" height="32" fill="#9bbc0f" stroke="#0f380f" stroke-width="2" />
+                @T("px", 298, y + 27, 8, "#0f380f", S.Keys.Short(row.A), "middle")
+                <rect x="372" y="@(y + 6)" width="64" height="32" fill="#0f380f" />
+                @T("px", 404, y + 27, 8, "#9bbc0f", "SET", "middle")
+            }
+        </g>
+    }
+
+    <g class="clk" @onclick="() => S.ResetKeys()">
+        @if (S.CtlSel == 8)
+        {
+            <rect x="32" y="612" width="200" height="52" fill="#0f380f" />
+            <rect x="36" y="616" width="192" height="44" fill="none" stroke="#9bbc0f" stroke-width="2" />
+            @T("px", 132, 643, 12, "#9bbc0f", "RESET", "middle")
+        }
+        else
+        {
+            <rect x="32" y="612" width="200" height="52" fill="#8bac0f" stroke="#0f380f" stroke-width="4" />
+            @T("px", 132, 643, 12, "#0f380f", "RESET", "middle")
+        }
+    </g>
+    <g class="clk" @onclick="() => S.GoMenu()">
+        @if (S.CtlSel == 9)
+        {
+            <rect x="260" y="612" width="188" height="52" fill="#0f380f" />
+            <rect x="264" y="616" width="180" height="44" fill="none" stroke="#9bbc0f" stroke-width="2" />
+            @T("px", 354, 643, 12, "#9bbc0f", "BACK", "middle")
+            @T("px", 278, 644, 12, "#9bbc0f", "&#9654;")
+        }
+        else
+        {
+            <rect x="260" y="612" width="188" height="52" fill="#8bac0f" stroke="#0f380f" stroke-width="4" />
+            @T("px", 354, 643, 12, "#0f380f", "BACK", "middle")
+        }
+    </g>
+</svg>
+
+@code {
+    [Parameter] public AppState S { get; set; } = null!;
+
+    static MarkupString T(string cls, int x, int y, int size, string fill, string text, string anchor = "")
+    {
+        string anc = string.IsNullOrEmpty(anchor) ? "" : $" text-anchor=\"{anchor}\"";
+        return new MarkupString($"<text class=\"{cls}\" x=\"{x}\" y=\"{y}\" font-size=\"{size}\" fill=\"{fill}\"{anc}>{text}</text>");
+    }
+}
