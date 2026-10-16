@@ -1,0 +1,133 @@
+@{
+    var g = S.G!;
+    var cur = g.Cur;
+    int ghostY = g.GhostY();
+    var upcoming = g.Next.Take(5).ToArray();
+    var k = S.Keys;
+}
+<svg class="screen" viewBox="0 0 480 720" xmlns="http://www.w3.org/2000/svg">
+    <Frame />
+    @T("px", 24, 58, 16, "#0f380f", "TET.NET")
+    @T("px", 456, 58, 8, "#306230", $"{k.Short(GameAction.Pause)} PAUSE", "end")
+
+    <!-- Hold -->
+    <rect x="24" y="110" width="92" height="96" fill="#8bac0f" stroke="#0f380f" stroke-width="3" />
+    @T("px", 70, 128, 8, "#0f380f", "HOLD", "middle")
+    <g opacity="@(g.HoldUsed ? "0.45" : "1")"><Mini Type="@g.Hold" Cx="70" Cy="168" S="14" /></g>
+
+    <!-- Stats -->
+    <rect x="24" y="222" width="92" height="64" fill="#8bac0f" stroke="#0f380f" stroke-width="3" />
+    @T("px", 70, 240, 8, "#0f380f", "SCORE", "middle")
+    @T("px", 70, 266, 12, "#0f380f", AppState.Pad(g.Score, 6), "middle")
+
+    <rect x="24" y="302" width="92" height="56" fill="#8bac0f" stroke="#0f380f" stroke-width="3" />
+    @T("px", 70, 320, 8, "#0f380f", "LEVEL", "middle")
+    @T("px", 70, 342, 12, "#0f380f", AppState.Pad(g.Level, 2), "middle")
+
+    <rect x="24" y="374" width="92" height="56" fill="#8bac0f" stroke="#0f380f" stroke-width="3" />
+    @T("px", 70, 392, 8, "#0f380f", "LINES", "middle")
+    @T("px", 70, 414, 12, "#0f380f", AppState.Pad(g.Lines, 3), "middle")
+
+    <rect x="24" y="446" width="92" height="72" fill="#8bac0f" stroke="#0f380f" stroke-width="3" />
+    @T("px", 70, 464, 8, "#0f380f", "COMBO", "middle")
+    @T("px", 70, 484, 12, "#0f380f", $"x{Math.Max(g.Combo, 0)}", "middle")
+    @if (g.B2B)
+    {
+        @T("px", 70, 506, 8, "#306230", "B2B", "middle")
+    }
+
+    <!-- Board 10x20 -->
+    <rect x="128" y="110" width="240" height="480" fill="#8bac0f" />
+    @for (int i = 1; i < 10; i++)
+    {
+        <line x1="@(128 + 24 * i)" y1="110" x2="@(128 + 24 * i)" y2="590" stroke="#306230" stroke-width="1" opacity="0.35" />
+    }
+    @for (int i = 1; i < 20; i++)
+    {
+        <line x1="128" y1="@(110 + 24 * i)" x2="368" y2="@(110 + 24 * i)" stroke="#306230" stroke-width="1" opacity="0.35" />
+    }
+    @for (int r = Engine.Hidden; r < Engine.H; r++)
+    {
+        for (int c = 0; c < Engine.W; c++)
+        {
+            if (g.Grid[r, c] != 0)
+            {
+                <Block X="@(128 + 24 * c)" Y="@(110 + 24 * (r - Engine.Hidden))" S="24" />
+            }
+        }
+    }
+    @if (!g.GameOver && ghostY != cur.Y)
+    {
+        foreach (var gc in Engine.Shape(cur.Type, cur.Rot))
+        {
+            int gr = gc.y + ghostY;
+            if (gr >= Engine.Hidden)
+            {
+                <rect x="@(128 + 24 * (gc.x + cur.X) + 3)" y="@(110 + 24 * (gr - Engine.Hidden) + 3)" width="18" height="18" fill="none" stroke="#0f380f" stroke-width="2" stroke-dasharray="3 2" />
+            }
+        }
+    }
+    @if (!g.GameOver)
+    {
+        foreach (var ac in Engine.Shape(cur.Type, cur.Rot))
+        {
+            int ar = ac.y + cur.Y;
+            if (ar >= Engine.Hidden)
+            {
+                <Block X="@(128 + 24 * (ac.x + cur.X))" Y="@(110 + 24 * (ar - Engine.Hidden))" S="24" />
+            }
+        }
+    }
+    <rect x="128" y="110" width="240" height="480" fill="none" stroke="#0f380f" stroke-width="4" />
+
+    <!-- Next 5 -->
+    <rect x="380" y="110" width="76" height="340" fill="#8bac0f" stroke="#0f380f" stroke-width="3" />
+    @T("px", 418, 128, 8, "#0f380f", "NEXT", "middle")
+    @for (int i = 0; i < upcoming.Length; i++)
+    {
+        <Mini Type="@upcoming[i]" Cx="418" Cy="@(152 + 62 * i)" S="@(i == 0 ? 14 : 12)" />
+    }
+
+    <!-- Last clear -->
+    <rect x="380" y="466" width="76" height="52" fill="#8bac0f" stroke="#0f380f" stroke-width="3" />
+    @T("px", 418, 484, 8, "#0f380f", "LAST", "middle")
+    @T("px", 418, 506, 8, "#0f380f", string.IsNullOrEmpty(g.LastClear) ? "---" : g.LastClear, "middle")
+
+    <!-- Toast -->
+    @if (g.ToastT > 0 && !g.GameOver)
+    {
+        <rect x="128" y="72" width="240" height="30" fill="#0f380f" />
+        @T("px", 248, 92, 10, "#9bbc0f", g.Toast, "middle")
+    }
+
+    <!-- Controls hint -->
+    <rect x="24" y="620" width="432" height="72" fill="#8bac0f" stroke="#0f380f" stroke-width="3" />
+    @T("px", 240, 646, 8, "#0f380f", $"{k.Short(GameAction.Left)} {k.Short(GameAction.Right)} MOVE  {k.Short(GameAction.SoftDrop)} SOFT  {k.Short(GameAction.HardDrop)} HARD", "middle")
+    @T("px", 240, 672, 8, "#0f380f", $"{k.Short(GameAction.RotateCw)} ROTATE  {k.Short(GameAction.RotateCcw)} CCW  {k.Short(GameAction.Hold)} HOLD", "middle")
+
+    <!-- Overlays -->
+    @if (S.Paused)
+    {
+        <rect x="128" y="110" width="240" height="480" fill="#0f380f" opacity="0.92" />
+        @T("px", 248, 320, 16, "#9bbc0f", "PAUSED", "middle")
+        @T("px", 248, 364, 8, "#9bbc0f", $"{k.Short(GameAction.Pause)} RESUME", "middle")
+        @T("px", 248, 388, 8, "#9bbc0f", "Q QUIT", "middle")
+    }
+    @if (g.GameOver)
+    {
+        <rect x="128" y="110" width="240" height="480" fill="#0f380f" opacity="0.92" />
+        @T("px", 248, 310, 16, "#9bbc0f", "GAME OVER", "middle")
+        @T("px", 248, 350, 8, "#9bbc0f", $"SCORE {AppState.Pad(g.Score, 6)}", "middle")
+        @T("px", 248, 394, 8, "#9bbc0f", "PRESS ENTER", "middle")
+    }
+</svg>
+
+@code {
+    [Parameter] public AppState S { get; set; } = null!;
+
+    static MarkupString T(string cls, int x, int y, int size, string fill, string text, string anchor = "")
+    {
+        string anc = string.IsNullOrEmpty(anchor) ? "" : $" text-anchor=\"{anchor}\"";
+        return new MarkupString($"<text class=\"{cls}\" x=\"{x}\" y=\"{y}\" font-size=\"{size}\" fill=\"{fill}\"{anc}>{text}</text>");
+    }
+}
