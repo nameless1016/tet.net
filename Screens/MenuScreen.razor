@@ -1,0 +1,56 @@
+<svg class="screen" viewBox="0 0 480 720" xmlns="http://www.w3.org/2000/svg">
+    <Frame />
+    @foreach (var d in Decor)
+    {
+        <Block X="@d.x" Y="@d.y" S="16" />
+    }
+    @T("px", 240, 170, 48, "#0f380f", "TET", "middle")
+    @T("px", 240, 232, 40, "#306230", ".NET", "middle")
+    <rect x="70" y="248" width="340" height="4" fill="#0f380f" />
+    @T("px", 240, 280, 8, "#0f380f", "BLAZOR EDITION", "middle")
+
+    @for (int i = 0; i < AppState.MenuItems.Length; i++)
+    {
+        int idx = i;
+        int y = 320 + 72 * i;
+        bool sel = S.MenuIndex == i;
+        <g class="clk" @onclick="() => S.Activate(idx)" @onmouseenter="() => S.Hover(idx)">
+            @if (sel)
+            {
+                <rect x="90" y="@y" width="300" height="56" fill="#0f380f" />
+                <rect x="94" y="@(y + 4)" width="292" height="48" fill="none" stroke="#9bbc0f" stroke-width="2" />
+                @T("px", 240, y + 35, 16, "#9bbc0f", AppState.MenuItems[i], "middle")
+                @T("px", 108, y + 34, 12, "#9bbc0f", "&#9654;")
+            }
+            else
+            {
+                <rect x="90" y="@y" width="300" height="56" fill="#8bac0f" stroke="#0f380f" stroke-width="4" />
+                @T("px", 240, y + 35, 16, "#0f380f", AppState.MenuItems[i], "middle")
+            }
+        </g>
+    }
+
+    @T("px", 240, 636, 8, "#306230", "PRESS ENTER", "middle")
+    @T("px", 240, 664, 8, "#0f380f", $"HI-SCORE {AppState.Pad(S.HiScore, 6)}", "middle")
+    @T("px", 240, 690, 8, "#306230", "2026 TET.NET", "middle")
+</svg>
+
+@code {
+    [Parameter] public AppState S { get; set; } = null!;
+
+    static readonly (int x, int y)[] Decor =
+    {
+        (52,56),(36,72),(52,72),(68,72),
+        (432,86),(400,102),(416,102),(432,102),
+        (32,474),(48,474),(64,474),(80,474),
+        (412,426),(428,426),(396,442),(412,442),
+        (60,596),(76,596),(76,612),(92,612),
+        (390,586),(390,602),(406,602),(422,602),
+    };
+
+    static MarkupString T(string cls, int x, int y, int size, string fill, string text, string anchor = "")
+    {
+        string anc = string.IsNullOrEmpty(anchor) ? "" : $" text-anchor=\"{anchor}\"";
+        return new MarkupString($"<text class=\"{cls}\" x=\"{x}\" y=\"{y}\" font-size=\"{size}\" fill=\"{fill}\"{anc}>{text}</text>");
+    }
+}
