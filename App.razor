@@ -1,0 +1,32 @@
+@implements IDisposable
+@inject IJSRuntime Js
+
+@switch (S.At)
+{
+    case Mode.Menu: <MenuScreen S="S" /> break;
+    case Mode.Play: <PlayScreen S="S" /> break;
+    case Mode.Board: <LeaderboardScreen S="S" /> break;
+    case Mode.Controls: <ControlsScreen S="S" /> break;
+    case Mode.Help: <HowToScreen S="S" /> break;
+}
+
+@code {
+    AppState S = null!;
+    DotNetObjectReference<App>? self;
+
+    protected override void OnInitialized() => S = new AppState(Js, () => StateHasChanged());
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        self = DotNetObjectReference.Create(this);
+        await Js.InvokeVoidAsync("tetnet.init", self);
+        await S.LoadAsync();
+    }
+
+    [JSInvokable] public void OnKeyDown(string code, bool repeat) => S.KeyDown(code, repeat);
+    [JSInvokable] public void OnKeyUp(string code) => S.KeyUp(code);
+    [JSInvokable] public void OnBlur() => S.Blur();
+
+    public void Dispose() => self?.Dispose();
+}

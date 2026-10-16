@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TET.NET</title>
+  <base href="/" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <link href="css/app.css" rel="stylesheet" />
+</head>
+<body>
+  <div id="app"><p class="loading">LOADING...</p></div>
+  <script>
+    window.tetnet = {
+      get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } },
+      set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) { } },
+      init: ref => {
+        addEventListener('keydown', e => {
+          if (e.ctrlKey || e.metaKey || e.altKey || /^F\d+$/.test(e.code)) return;
+          e.preventDefault();
+          ref.invokeMethodAsync('OnKeyDown', e.code, e.repeat);
+        });
+        addEventListener('keyup', e => ref.invokeMethodAsync('OnKeyUp', e.code));
+        addEventListener('blur', () => ref.invokeMethodAsync('OnBlur'));
+      }
+    };
+  </script>
+  <script src="_framework/blazor.webassembly.js"></script>
+</body>
+</html>

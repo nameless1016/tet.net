@@ -1,0 +1,6 @@
+html, body { margin: 0; height: 100%; background: #0b1a0b; overflow: hidden; }
+#app { height: 100%; display: flex; align-items: center; justify-content: center; }
+.screen { height: min(100vh, 150vw); aspect-ratio: 2 / 3; display: block; user-select: none; }
+.px { font-family: 'Press Start 2P', 'Courier New', monospace; }
+.clk { cursor: pointer; }
+.loading { color: #9bbc0f; font-family: 'Courier New', monospace; }
