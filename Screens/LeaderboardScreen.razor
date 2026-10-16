@@ -1,0 +1,74 @@
+@{ var rows = S.Rows(); }
+<svg class="screen" viewBox="0 0 480 720" xmlns="http://www.w3.org/2000/svg">
+    <Frame />
+    @T("px", 240, 90, 20, "#0f380f", "HIGH SCORES", "middle")
+
+    @if (S.Banner != "")
+    {
+        <rect x="120" y="108" width="240" height="32" fill="#0f380f" />
+        @T("px", 240, 129, 8, "#9bbc0f", S.Banner, "middle")
+    }
+
+    @T("px", 56, 174, 8, "#306230", "RANK")
+    @T("px", 140, 174, 8, "#306230", "NAME")
+    @T("px", 250, 174, 8, "#306230", "SCORE")
+    @T("px", 392, 174, 8, "#306230", "LINES")
+
+    @for (int i = 0; i < rows.Count; i++)
+    {
+        var row = rows[i];
+        int y = 188 + 68 * i;
+        string fg = row.Entry ? "#9bbc0f" : "#0f380f";
+        if (row.Entry)
+        {
+            <rect x="32" y="@y" width="416" height="56" fill="#0f380f" />
+        }
+        else
+        {
+            <rect x="32" y="@y" width="416" height="56" fill="#8bac0f" stroke="#0f380f" stroke-width="3" />
+        }
+        @T("px", 56, y + 36, 16, fg, (i + 1).ToString())
+        @T("px", 140, y + 36, 16, fg, row.Name)
+        @T("px", 250, y + 36, 12, fg, AppState.Pad(row.Score, 6))
+        @T("px", 392, y + 36, 12, fg, AppState.Pad(row.Lines, 3))
+        @if (row.Entry)
+        {
+            <rect x="@(138 + 16 * S.Slot)" y="@(y + 8)" width="20" height="40" fill="none" stroke="#9bbc0f" stroke-width="2" />
+        }
+    }
+
+    @if (S.Entering)
+    {
+        @T("px", 240, 560, 8, "#306230", "3 LETTERS MAX", "middle")
+        @T("px", 240, 584, 8, "#0f380f", "&#8593;&#8595; LETTER  &#8592;&#8594; SLOT  ENTER OK", "middle")
+        <g class="clk" @onclick="() => S.ConfirmEntry()">
+            <rect x="60" y="616" width="160" height="52" fill="#0f380f" />
+            <rect x="64" y="620" width="152" height="44" fill="none" stroke="#9bbc0f" stroke-width="2" />
+            @T("px", 140, 649, 16, "#9bbc0f", "OK", "middle")
+            @T("px", 78, 648, 12, "#9bbc0f", "&#9654;")
+        </g>
+        <g class="clk" @onclick="() => S.GoMenu()">
+            <rect x="260" y="616" width="160" height="52" fill="#8bac0f" stroke="#0f380f" stroke-width="4" />
+            @T("px", 340, 649, 16, "#0f380f", "BACK", "middle")
+        </g>
+    }
+    else
+    {
+        <g class="clk" @onclick="() => S.GoMenu()">
+            <rect x="140" y="616" width="200" height="52" fill="#0f380f" />
+            <rect x="144" y="620" width="192" height="44" fill="none" stroke="#9bbc0f" stroke-width="2" />
+            @T("px", 240, 649, 16, "#9bbc0f", "BACK", "middle")
+            @T("px", 158, 648, 12, "#9bbc0f", "&#9654;")
+        </g>
+    }
+</svg>
+
+@code {
+    [Parameter] public AppState S { get; set; } = null!;
+
+    static MarkupString T(string cls, int x, int y, int size, string fill, string text, string anchor = "")
+    {
+        string anc = string.IsNullOrEmpty(anchor) ? "" : $" text-anchor=\"{anchor}\"";
+        return new MarkupString($"<text class=\"{cls}\" x=\"{x}\" y=\"{y}\" font-size=\"{size}\" fill=\"{fill}\"{anc}>{text}</text>");
+    }
+}
