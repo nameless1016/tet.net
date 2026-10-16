@@ -1,0 +1,9 @@
+<text @attributes="AdditionalAttributes">@ChildContent</text>
+
+@code {
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

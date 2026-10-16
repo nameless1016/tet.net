@@ -1,0 +1,19 @@
+@if (Type >= 0)
+{
+    var cells = Engine.Shape(Type, 0);
+    int minX = cells.Min(c => c.x), maxX = cells.Max(c => c.x);
+    int minY = cells.Min(c => c.y), maxY = cells.Max(c => c.y);
+    double ox = Cx - (maxX - minX + 1) * S / 2.0;
+    double oy = Cy - (maxY - minY + 1) * S / 2.0;
+    foreach (var cell in cells)
+    {
+        <Block X="@((int)(ox + (cell.x - minX) * S))" Y="@((int)(oy + (cell.y - minY) * S))" S="@S" />
+    }
+}
+
+@code {
+    [Parameter] public int Type { get; set; } = -1;
+    [Parameter] public int Cx { get; set; }
+    [Parameter] public int Cy { get; set; }
+    [Parameter] public int S { get; set; } = 14;
+}

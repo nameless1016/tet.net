@@ -1,0 +1,11 @@
+<rect x="@X" y="@Y" width="@S" height="@S" fill="#0f380f" />
+<rect x="@(X + B)" y="@(Y + B)" width="@(S - 2 * B)" height="@(S - 2 * B)" fill="#306230" />
+<rect x="@(X + 2 * B)" y="@(Y + 2 * B)" width="@Hl" height="@Hl" fill="#8bac0f" />
+
+@code {
+    [Parameter] public int X { get; set; }
+    [Parameter] public int Y { get; set; }
+    [Parameter] public int S { get; set; } = 24;
+    int B => S >= 24 ? 3 : S >= 16 ? 2 : 1;
+    int Hl => S >= 24 ? 6 : S >= 16 ? 4 : 2;
+}
