@@ -1,20 +1,22 @@
 @implements IDisposable
 @inject IJSRuntime Js
+@inject TetNET.Services.SupabaseService Supa
 
 @switch (S.At)
 {
-    case Mode.Menu: <MenuScreen S="S" /> break;
-    case Mode.Play: <PlayScreen S="S" /> break;
-    case Mode.Board: <LeaderboardScreen S="S" /> break;
+    case Mode.Menu:     <MenuScreen S="S" /> break;
+    case Mode.Play:     <PlayScreen S="S" /> break;
+    case Mode.Board:    <LeaderboardScreen S="S" /> break;
     case Mode.Controls: <ControlsScreen S="S" /> break;
-    case Mode.Help: <HowToScreen S="S" /> break;
+    case Mode.Help:     <HowToScreen S="S" /> break;
 }
 
 @code {
     AppState S = null!;
     DotNetObjectReference<App>? self;
 
-    protected override void OnInitialized() => S = new AppState(Js, () => StateHasChanged());
+    protected override void OnInitialized() =>
+        S = new AppState(Js, () => StateHasChanged(), Supa);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
